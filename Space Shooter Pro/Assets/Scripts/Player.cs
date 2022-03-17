@@ -6,6 +6,12 @@ public class Player : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 8f;
+    [SerializeField]
+    private GameObject _laserPrefab;
+    private Vector3 _laserOffset = new Vector3(0, 0.8f);
+    [SerializeField]
+    private float _fireRate = 0.5f;
+    private float _canFire = -1f;
 
     //public float horizontalInput;
 
@@ -18,10 +24,14 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _calculateMovement();
+        CalculateMovement();
+
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire){
+            SpawnLaser();
+        }
     }
 
-    private void _calculateMovement(){
+    void CalculateMovement(){
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
         Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
@@ -35,5 +45,10 @@ public class Player : MonoBehaviour
         if(transform.position.x < -11.3f){
             transform.position = new Vector3(11.3f, transform.position.y, transform.position.z);
         }
+    }
+
+    void SpawnLaser() {
+        _canFire = Time.time + _fireRate;
+        Instantiate(_laserPrefab, transform.position + _laserOffset, Quaternion.identity);
     }
 }
